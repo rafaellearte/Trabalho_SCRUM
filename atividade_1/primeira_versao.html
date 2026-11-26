@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biblioteca IF — Consulta de salas</title>
+  <style>
+    :root {
+      --green: #173d32;
+      --green-light: #e8f5ec;
+      --green-accent: #2f8058;
+    
+      --red-light: #fff0ef;
+      --text: #202a25;
+      --muted: #65716a;
+      --border: #dce5df;
+      --surface: #ffffff;
+      --background: #f4f7f5;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--background);
+    }
+
+    .topbar {
+      background: var(--green);
+      color: white;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-icon {
+      width: 44px; height: 44px;
+      display: grid; place-items: center;
+      border-radius: 13px;
+      background: rgba(255,255,255,.12);
+      font-size: 24px;
+    }
+    .brand h1 { margin: 0; font-size: 19px; }
+    .brand p { margin: 4px 0 0; color: #d6e8de; font-size: 13px; }
+    .nav { display: flex; gap: 8px; }
+    .nav a {
+      color: #e7f2ec; text-decoration: none;
+      padding: 10px 13px; border-radius: 9px;
+      font-size: 14px; transition: .2s;
+    }
+    .nav a:hover, .nav a.active { background: rgba(255,255,255,.15); color: white; }
+
+    main { width: min(100% - 32px, 960px); margin: 34px auto 48px; }
+    .intro { margin-bottom: 24px; }
+    .eyebrow {
+      color: var(--green-accent); text-transform: uppercase;
+      letter-spacing: .1em; font-size: 12px; font-weight: 700;
+    }
+    .intro h2 { margin: 8px 0; font-size: clamp(25px, 4vw, 34px); }
+    .intro p { margin: 0; color: var(--muted); line-height: 1.6; }
+
+    .layout { display: grid; grid-template-columns: 1.3fr .7fr; gap: 20px; }
+    .panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; padding: 24px;
+      box-shadow: 0 8px 24px rgba(20, 50, 35, .04);
+    }
+    .panel h3 { margin: 0 0 8px; font-size: 19px; }
+    .panel .sub { margin: 0 0 20px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+
+    .room-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .room-pill {
+      background: #eef4f0; color: var(--green);
+      padding: 7px 11px; border-radius: 999px;
+      font-size: 12px; font-weight: 700;
+    }
+    .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .time-option {
+      border: 1px solid var(--border); background: white;
+      border-radius: 13px; padding: 16px 10px;
+      cursor: pointer; font: inherit; text-align: center;
+      transition: .18s;
+    }
+    .time-option strong { display: block; font-size: 20px; margin-bottom: 8px; }
+    .time-option span { font-size: 12px; color: var(--muted); }
+    .time-option:hover { border-color: var(--green-accent); transform: translateY(-1px); }
+    .time-option.selected { border: 2px solid var(--green-accent); background: var(--green-light); padding: 15px 9px; }
+    .time-option.selected strong { color: var(--green); }
+
+    .primary {
+      width: 100%; margin-top: 18px; border: 0;
+      border-radius: 12px; padding: 14px 18px;
+      color: white; background: var(--green);
+      font: inherit; font-weight: 700; cursor: pointer;
+      transition: .2s;
+    }
+    .primary:hover { background: #245844; }
+    .primary:focus-visible, .time-option:focus-visible, .nav a:focus-visible {
+      outline: 3px solid #8ac9a5; outline-offset: 3px;
+    }
+
+    .result {
+      margin-top: 18px; padding: 16px; border-radius: 13px;
+      display: none; align-items: flex-start; gap: 12px;
+      line-height: 1.5;
+    }
+    .result.show { display: flex; }
+    .result.free { background: var(--green-light); color: #1d653b; }
+    .result.busy { background: var(--red-light); color: var(--red); }
+    .result .symbol { font-size: 24px; line-height: 1; }
+    .result strong { display: block; margin-bottom: 3px; font-size: 16px; }
+    .result p { margin: 0; font-size: 14px; }
+
+    .side-panel { display: flex; flex-direction: column; gap: 15px; }
+    .status-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; border-bottom: 1px solid #edf1ee; }
+    .status-row:last-child { border-bottom: 0; }
+    .status-row strong { font-size: 15px; }
+    .status {
+      font-size: 12px; font-weight: 700; padding: 6px 9px; border-radius: 999px;
+    }
+    .status.free { color: #1d653b; background: var(--green-light); }
+    .status.busy { color: var(--red); background: var(--red-light); }
+    .hint { background: #f5f8f6; border-radius: 12px; padding: 14px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+    .hint strong { color: var(--text); }
+
+    .page-section { display: none; }
+    .page-section.active { display: block; }
+    .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 18px; }
+    .info-card { border: 1px solid var(--border); border-radius: 14px; padding: 18px; background: white; }
+    .info-card .number { color: var(--green-accent); font-size: 12px; font-weight: 800; }
+    .info-card h3 { margin: 8px 0; font-size: 16px; }
+    .info-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .back-link { display: inline-block; margin-top: 18px; color: var(--green-accent); font-weight: 700; text-decoration: none; }
+
+    footer { text-align: center; padding: 20px; color: var(--muted); font-size: 12px; }
+
+    @media (max-width: 720px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .nav { flex-wrap: wrap; }
+      .layout { grid-template-columns: 1fr; }
+      .info-grid { grid-template-columns: 1fr; }
+      .panel { padding: 19px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">📚</div>
+      <div>
+        <h1>Biblioteca IF</h1>
+        <p>Consulta de salas de estudo</p>
+      </div>
+    </div>
+    <nav class="nav" aria-label="Navegação principal">
+      <a href="#consulta" class="active" data-page="consulta">Consultar sala</a>
+      <a href="#horarios" data-page="horarios">Horários</a>
+      <a href="#sobre" data-page="sobre">Sobre</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="consulta" class="page-section active">
+      <div class="intro">
+        <div class="eyebrow">Área do estudante</div>
+        <h2>Encontre um horário livre</h2>
+        
+      </div>
+
+      <div class="layout">
+        <section class="panel">
+          <div class="room-heading">
+            <h3>Sala </h3>
+            <span class="room-pill">Biblioteca</span>
+          </div>
+          <p class="sub">Selecione um horário e toque em “Consultar disponibilidade”.</p>
+
+          <div class="time-grid" role="group" aria-label="Escolha um horário">
+            <button class="time-option" type="button" data-time="9h" aria-pressed="false">
+              <strong>9h</strong><span>Manhã</span>
+            </button>
+            <button class="time-option selected" type="button" data-time="10h" aria-pressed="true">
+              <strong>10h</strong><span>Manhã</span>
+            </button>
+            <button class="time-option" type="button" data-time="11h" aria-pressed="false">
+              <strong>11h</strong><span>Manhã</span>
+            </button>
+          </div>
+
+          <button class="primary" id="consultButton" type="button">Consultar disponibilidade</button>
+
+          <div class="result busy show" id="result" role="status" aria-live="polite">
+            <div class="symbol" id="resultSymbol" aria-hidden="true">✕</div>
+           <!-- <div>
+             <strong id="resultTitle">Sala ocupada</strong>
+              <p id="resultText">A Sala 1 está ocupada às 10h. Escolha outro horário.</p>
+            </div>-->
+          </div>
+        </section>
+
+        <aside class="panel side-panel">
+          <div>
+            <h3>Resumo dos horários</h3>
+            <p class="sub">Disponibilidade informada para a atividade.</p>
+            <div class="status-row"><strong>9h</strong><span class="status free">Livre</span></div>
+            <!--<div class="status-row"><strong>10h</strong><span class="status busy">Ocupada</span></div>-->
+            <div class="status-row"><strong>11h</strong><span class="status free">Livre</span></div>
+          </div>
+          <div class="hint"><strong>Dica:</strong> se o horário estiver ocupado, escolha outro horário disponível para estudar.</div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="horarios" class="page-section">
+      <div class="intro">
+        <div class="eyebrow">Disponibilidade</div>
+        <h2>Horários da Sala 1</h2>
+        <p>Confira os horários simulados que estão livres ou ocupados.</p>
+      </div>
+      <div class="panel">
+        <div class="status-row"><strong>9h — Sala 1</strong><span class="status free">Livre</span></div>
+        <div class="status-row"><strong>10h — Sala 1</strong><span class="status busy">Ocupada</span></div>
+        <div class="status-row"><strong>11h — Sala 1</strong><span class="status free">Livre</span></div>
+        <a class="back-link" href="#consulta" data-page="consulta">← Voltar para consulta</a>
+      </div>
+    </section>
+
+    <section id="sobre" class="page-section">
+      <div class="intro">
+        <div class="eyebrow">Sobre o protótipo</div>
+        <h2>Biblioteca IF</h2>
+        <p>Uma interface simples para que o estudante entenda a disponibilidade de uma sala.</p>
+      </div>
+      <div class="info-grid">
+        <article class="info-card">
+          <div class="number">01 / TRANSPARÊNCIA</div>
+          <h3>Informação visível</h3>
+          <p>O aplicativo mostra os horários e deixa claro o estado da sala.</p>
+        </article>
+        <article class="info-card">
+          <div class="number">02 / INSPEÇÃO</div>
+          <h3>Teste com estudante</h3>
+          <p>O usuário consulta os horários para verificar se compreende as respostas.</p>
+        </article>
+        <article class="info-card">
+          <div class="number">03 / ADAPTAÇÃO</div>
+          <h3>Melhoria da resposta</h3>
+          <p>A mensagem “Sala ocupada” evita que a tela fique sem resposta para 10h.</p>
+        </article>
+      </div>
+      <a class="back-link" href="#consulta" data-page="consulta">← Voltar para consulta</a>
+    </section>
+  </main>
+
+  <footer>Protótipo acadêmico • Dados simulados • Biblioteca IF</footer>
+
+  <script>
+    const options = document.querySelectorAll(".time-option");
+    const consultButton = document.getElementById("consultButton");
+    const result = document.getElementById("result");
+    const resultSymbol = document.getElementById("resultSymbol");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultText = document.getElementById("resultText");
+    let selectedTime = "10h";
+
+    options.forEach(option => {
+      option.addEventListener("click", () => {
+        selectedTime = option.dataset.time;
+        options.forEach(item => {
+          const isSelected = item === option;
+          item.classList.toggle("selected", isSelected);
+          item.setAttribute("aria-pressed", String(isSelected));
+        });
+        result.classList.remove("show");
+      });
+    });
+
+    consultButton.addEventListener("click", () => {
+      const isBusy = selectedTime === "10h";
+      result.className = "result show " + (isBusy ? "busy" : "free");
+      resultSymbol.textContent = isBusy ? "✕" : "✓";
+      resultTitle.textContent = isBusy ? "Sala ocupada" : "Sala livre";
+      resultText.textContent = isBusy
+        ? `A Sala 1 está ocupada às ${selectedTime}. Escolha outro horário.`
+        : `A Sala 1 está disponível às ${selectedTime}. Você pode utilizá-la.`;
+    });
+
+    function showPage(pageId) {
+      document.querySelectorAll(".page-section").forEach(section => {
+        section.classList.toggle("active", section.id === pageId);
+      });
+      document.querySelectorAll(".nav a").forEach(link => {
+        link.classList.toggle("active", link.dataset.page === pageId);
+      });
+    }
+
+    document.querySelectorAll("[data-page]").forEach(link => {
+      link.addEventListener("click", event => {
+        const pageId = link.dataset.page;
+        if (pageId) {
+          event.preventDefault();
+          showPage(pageId);
+          history.replaceState(null, "", "#" + pageId);
+        }
+      });
+    });
+
+    const initialPage = location.hash.replace("#", "");
+    if (["consulta", "horarios", "sobre"].includes(initialPage)) showPage(initialPage);
+  </script>
+</body>
+</html>

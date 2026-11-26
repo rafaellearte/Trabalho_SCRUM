@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biblioteca Conecta — Reservar sala</title>
+<style>
+:root{--navy:#18243a;--blue:#315be8;--green:#18865b;--red:#c33e4d;--ink:#263247;--muted:#718096;--line:#e5eaf1;--bg:#f5f7fb}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--navy);color:#fff;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{font-weight:bold;font-size:20px}.brand span{margin-right:10px}header small{color:#dce4f4}
+main{max-width:1000px;width:92%;margin:36px auto}
+.kicker{color:var(--blue);font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase}
+h1{color:var(--navy);font-size:clamp(27px,4vw,38px);margin:9px 0}
+.intro{color:var(--muted);line-height:1.6;margin-bottom:24px}
+.columns{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 8px 24px #18243a08}
+h2{font-size:19px;color:var(--navy);margin:0 0 18px}
+.room{background:#f8faff;border:1px solid var(--line);padding:15px;border-radius:12px;margin-bottom:20px}
+.room strong{display:block;color:var(--navy);margin-bottom:5px}.muted{color:var(--muted);font-size:13px}
+label{display:block;font-size:13px;font-weight:bold;color:#4a5870;margin:13px 0 7px}
+input,select{width:100%;padding:12px;border:1px solid #dce3ed;border-radius:10px;font:inherit;background:white}
+button{font:inherit;font-weight:bold;border:0;border-radius:10px;padding:11px 14px;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
+.primary{width:100%;background:var(--blue);color:white;margin-top:15px}
+.confirm{width:100%;background:var(--green);color:white;margin-top:10px;display:none}
+.cancel{background:#fff0f1;color:var(--red);border:1px solid #f5c6cb;font-size:12px}
+.result{display:none;margin-top:15px;padding:14px;border-radius:11px;font-size:14px;line-height:1.5}
+.success{display:block;background:#e7f7ef;color:#116746;border:1px solid #bfe9d2}
+.error{display:block;background:#fff0f1;color:#9e2b39;border:1px solid #f5c6cb}
+.instruction{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.instruction strong{display:block;color:var(--navy);margin-bottom:7px}.instruction p{font-size:13px;line-height:1.5;color:var(--muted);margin:0}
+.reservation{border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.reservation strong{display:block;color:var(--navy);font-size:14px}.reservation small{display:block;color:var(--muted);margin-top:4px}
+.reservation-list:empty:after{content:"Você ainda não tem reservas confirmadas.";display:block;color:var(--muted);font-size:13px;margin-top:10px}
+.history{border-top:1px solid var(--line);padding-top:16px;margin-top:20px}
+.history h3{font-size:15px;color:var(--navy);margin:0 0 8px}
+.history-entry{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:8px 0;border-bottom:1px dashed var(--line)}
+footer{text-align:center;color:#8994a6;font-size:12px;padding:0 15px 25px}
+@media(max-width:720px){.columns{grid-template-columns:1fr}header small{display:none}.panel{padding:19px}.reservation{align-items:flex-start}}
+</style>
+</head>
+<body>
+<header><div class="brand"><span>📚</span>Biblioteca Conecta</div><small>Espaços para estudar</small></header>
+<main>
+  <div class="kicker">Reservas de salas</div>
+  <h1>Encontre um espaço para estudar</h1>
+  <p class="intro">Consulte a disponibilidade da sala, confirme sua reserva e cancele quando não precisar mais do horário.</p>
+  <div class="columns">
+    <section class="panel">
+      <h2>Nova reserva</h2>
+      <div class="room" id="roomInfo"><strong>Sala 1 — Estudo em grupo</strong><span class="muted">Capacidade: até 6 estudantes</span></div>
+      <form id="bookingForm">
+        <label for="room">Escolha a sala</label>
+        <select id="room">
+          <option value="sala1">Sala 1 — Estudo em grupo</option>
+          <option value="sala2">Sala 2 — Estudo individual</option>
+          <option value="sala3">Sala 3 — Estudo colaborativo</option>
+        </select>
+        <label for="student">Nome do estudante</label>
+        <input id="student" type="text" placeholder="Digite seu nome" required>
+        <label for="time">Selecione o horário</label>
+        <select id="time">
+          <option value="09:00">09:00</option>
+          <option value="10:00">10:00</option>
+          <option value="11:00">11:00</option>
+        </select>
+        <button class="primary" type="submit">Verificar disponibilidade</button>
+      </form>
+      <div id="message" class="result" role="status" aria-live="polite"></div>
+      <button id="confirmButton" class="confirm" type="button">Confirmar reserva</button>
+      <div class="history">
+        <h3>Minhas reservas</h3>
+        <div id="reservationList" class="reservation-list"></div>
+      </div>
+    </section>
+    <aside class="panel">
+      <h2>Como reservar</h2>
+      <div class="instruction"><strong>1. Escolha o horário</strong><p>Selecione o horário em que deseja utilizar a Sala 1.</p></div>
+      <div class="instruction"><strong>2. Consulte a disponibilidade</strong><p>Verifique se a sala está livre para o período escolhido.</p></div>
+      <div class="instruction"><strong>3. Confirme sua reserva</strong><p>Se o horário estiver disponível, confirme para concluir a solicitação.</p></div>
+      <div class="instruction"><strong>4. Cancele se precisar</strong><p>Na lista “Minhas reservas”, use o botão de cancelamento para liberar o horário.</p></div>
+      <div class="history"><h3>Atividade recente</h3><div id="historyList" class="muted">Suas consultas e alterações aparecerão aqui.</div></div>
+    </aside>
+  </div>
+</main>
+<footer>Biblioteca Conecta • Reservas de salas de estudo</footer>
+<script>
+(function(){
+  // O horário das 10h da Sala 1 é considerado ocupado previamente neste cenário.
+  // Cada sala possui sua própria disponibilidade.
+  const rooms = {
+    sala1: { name: "Sala 1 — Estudo em grupo", capacity: "Capacidade: até 6 estudantes" },
+    sala2: { name: "Sala 2 — Estudo individual", capacity: "Capacidade: até 2 estudantes" },
+    sala3: { name: "Sala 3 — Estudo colaborativo", capacity: "Capacidade: até 8 estudantes" }
+  };
+  const initiallyReserved = {
+    sala1: new Set(["10:00"]),
+    sala2: new Set(),
+    sala3: new Set()
+  };
+  const userReservations = [];
+  const form = document.getElementById("bookingForm");
+  const roomSelect = document.getElementById("room");
+  const roomInfo = document.getElementById("roomInfo");
+  const studentInput = document.getElementById("student");
+  const timeSelect = document.getElementById("time");
+  const message = document.getElementById("message");
+  const confirmButton = document.getElementById("confirmButton");
+  const reservationList = document.getElementById("reservationList");
+  const historyList = document.getElementById("historyList");
+  let pending = null;
+
+  function getRoomName(roomId){
+    return rooms[roomId].name;
+  }
+
+  function updateRoomInfo(){
+    const room = rooms[roomSelect.value];
+    roomInfo.innerHTML = "";
+    const title = document.createElement("strong");
+    title.textContent = room.name;
+    const capacity = document.createElement("span");
+    capacity.className = "muted";
+    capacity.textContent = room.capacity;
+    roomInfo.appendChild(title);
+    roomInfo.appendChild(capacity);
+  }
+
+  function isOccupied(roomId, time){
+    return initiallyReserved[roomId].has(time) || userReservations.some(function(reservation){
+      return reservation.roomId === roomId && reservation.time === time && reservation.active;
+    });
+  }
+
+  function addHistory(name, roomId, time, status){
+    if(historyList.classList.contains("muted")){
+      historyList.textContent = "";
+      historyList.classList.remove("muted");
+    }
+    const row = document.createElement("div");
+    row.className = "history-entry";
+    const left = document.createElement("span");
+    left.textContent = name + " • " + getRoomName(roomId) + " • " + time;
+    const right = document.createElement("strong");
+    right.textContent = status;
+    right.style.color = (status === "Ocupado" || status === "Cancelada") ? "var(--red)" : "var(--green)";
+    row.appendChild(left);
+    row.appendChild(right);
+    historyList.prepend(row);
+  }
+
+  function renderReservations(){
+    reservationList.innerHTML = "";
+    const active = userReservations.filter(function(item){ return item.active; });
+    if(active.length === 0){
+      const empty = document.createElement("p");
+      empty.className = "muted";
+      empty.textContent = "Você ainda não tem reservas confirmadas.";
+      reservationList.appendChild(empty);
+      return;
+    }
+    active.forEach(function(item){
+      const card = document.createElement("div");
+      card.className = "reservation";
+      const details = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = getRoomName(item.roomId) + " • " + item.time;
+      const subtitle = document.createElement("small");
+      subtitle.textContent = "Reservada para " + item.name;
+      details.appendChild(title);
+      details.appendChild(subtitle);
+      const cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.className = "cancel";
+      cancel.textContent = "Cancelar";
+      cancel.setAttribute("aria-label", "Cancelar reserva da " + getRoomName(item.roomId) + " às " + item.time);
+      cancel.addEventListener("click", function(){ cancelReservation(item.id); });
+      card.appendChild(details);
+      card.appendChild(cancel);
+      reservationList.appendChild(card);
+    });
+  }
+
+  function checkAvailability(){
+    const name = studentInput.value.trim();
+    const roomId = roomSelect.value;
+    const roomName = getRoomName(roomId);
+    const time = timeSelect.value;
+    pending = null;
+    confirmButton.style.display = "none";
+    message.className = "result";
+
+    if(!name){
+      studentInput.focus();
+      message.classList.add("error");
+      message.textContent = "Informe o nome do estudante para consultar.";
+      return;
+    }
+    if(isOccupied(roomId, time)){
+      message.classList.add("error");
+      message.textContent = "Horário ocupado. " + roomName + " não está disponível às " + time + ". A reserva não foi confirmada.";
+      addHistory(name, roomId, time, "Ocupado");
+      return;
+    }
+    pending = {name:name, roomId:roomId, time:time};
+    message.classList.add("success");
+    message.textContent = "Horário disponível! " + roomName + " está livre às " + time + ". Clique em “Confirmar reserva” para concluir.";
+    confirmButton.style.display = "block";
+    addHistory(name, roomId, time, "Disponível");
+  }
+
+  form.addEventListener("submit", function(event){
+    event.preventDefault();
+    checkAvailability();
+  });
+
+  confirmButton.addEventListener("click", function(){
+    if(!pending) return;
+    // Verifica novamente para evitar uma reserva duplicada entre consulta e confirmação.
+    if(isOccupied(pending.roomId, pending.time)){
+      message.className = "result error";
+      message.textContent = "Este horário acabou de ser ocupado. A reserva não foi confirmada.";
+      confirmButton.style.display = "none";
+      pending = null;
+      return;
+    }
+    const reservation = {
+      id: Date.now() + Math.random(),
+      roomId: pending.roomId,
+      name: pending.name,
+      time: pending.time,
+      active: true
+    };
+    userReservations.push(reservation);
+    message.className = "result success";
+    message.textContent = "Reserva confirmada! " + getRoomName(reservation.roomId) + " às " + reservation.time + " reservada para " + reservation.name + ".";
+    addHistory(reservation.name, reservation.roomId, reservation.time, "Confirmada");
+    confirmButton.style.display = "none";
+    pending = null;
+    renderReservations();
+  });
+
+  function cancelReservation(id){
+    const reservation = userReservations.find(function(item){ return item.id === id && item.active; });
+    if(!reservation) return;
+    reservation.active = false;
+    message.className = "result success";
+    message.textContent = "Reserva cancelada. O horário " + reservation.time + " da " + getRoomName(reservation.roomId) + " foi liberado.";
+    addHistory(reservation.name, reservation.roomId, reservation.time, "Cancelada");
+    pending = null;
+    confirmButton.style.display = "none";
+    renderReservations();
+  }
+
+  roomSelect.addEventListener("change", function(){
+    updateRoomInfo();
+    pending = null;
+    confirmButton.style.display = "none";
+    message.className = "result";
+    message.textContent = "";
+  });
+
+  updateRoomInfo();
+  renderReservations();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Atividades | Portfólio</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #f4f6fb;
+      --surface: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --primary: #4f46e5;
+      --primary-dark: #3730a3;
+      --line: #e7eaf2;
+    }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .topbar {
+      background: #111827;
+      color: white;
+      padding: 18px 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .brand { font-size: 1.05rem; font-weight: 700; letter-spacing: .3px; }
+    .brand span { color: #a5b4fc; }
+    .topbar small { color: #cbd5e1; }
+    .container { width: min(1100px, 88%); margin: 54px auto; }
+    .intro { margin-bottom: 34px; }
+    .eyebrow {
+      color: var(--primary);
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.6px;
+      margin-bottom: 12px;
+    }
+    h1 { font-size: clamp(2rem, 5vw, 3rem); margin-bottom: 12px; }
+    .intro p { color: var(--muted); line-height: 1.6; max-width: 650px; }
+    .section-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-heading h2 { font-size: 1.15rem; }
+    .count {
+      color: var(--muted);
+      font-size: .85rem;
+      background: #e9eaff;
+      padding: 7px 12px;
+      border-radius: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    .activity {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      min-height: 165px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .activity:hover {
+      transform: translateY(-4px);
+      border-color: #c7c5ff;
+      box-shadow: 0 12px 28px rgba(31, 41, 55, .08);
+    }
+    .activity-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .number {
+      width: 42px; height: 42px;
+      display: grid; place-items: center;
+      border-radius: 12px;
+      background: #eef0ff;
+      color: var(--primary);
+      font-weight: 800;
+    }
+    .arrow { color: #98a2b3; font-size: 1.2rem; }
+    .activity h3 { font-size: 1rem; margin-bottom: 7px; }
+    .activity p { color: var(--muted); font-size: .88rem; line-height: 1.45; }
+    .footer {
+      margin-top: 42px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .85rem;
+      text-align: center;
+    }
+    @media (max-width: 800px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) {
+      .topbar { padding: 16px 6%; align-items: flex-start; flex-direction: column; }
+      .container { width: 88%; margin: 38px auto; }
+      .grid { grid-template-columns: 1fr; }
+      .activity { min-height: 145px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">PORTFÓLIO <span>WEB</span></div>
+    <small>HTML • CSS • Atividades práticas</small>
+  </header>
+
+  <main class="container">
+    <section class="intro">
+      <div class="eyebrow">Meu espaço de aprendizagem</div>
+      <h1>Atividades de HTML e CSS</h1>
+      <p>
+        Bem-vindo(a)! Aqui estão reunidas as doze atividades desenvolvidas durante
+        a disciplina. Nas atividades 1 a 5, você encontrará duas versões: a incompleta/com falha e a versão completa.
+      </p>
+    </section>
+
+    <section aria-labelledby="activities-title">
+      <div class="section-heading">
+        <h2 id="activities-title">Todas as atividades</h2>
+        <span class="count">17 páginas • 12 atividades</span>
+      </div>
+
+      <div class="grid">
+        <!-- LINKAGEM: altere o href de cada cartão para o caminho do arquivo da atividade. -->
+        <a class="activity" href="atividade_1/primeira_versao.html">
+          <div class="activity-top"><span class="number">1.1</span><span class="arrow">↗</span></div>
+          <h3>Atividade 1.1</h3><p>Versão incompleta / com falha. Sistema apresentado com partes incompletas ou falhas.</p>
+        </a>
+        <a class="activity" href="atividade_1/segunda_versao.html">
+          <div class="activity-top"><span class="number">1.2</span><span class="arrow">↗</span></div>
+          <h3>Atividade 1.2</h3><p>Versão completa. Sistema finalizado e funcionando corretamente.</p>
+        </a>
+        <a class="activity" href="atividade_2/biblioteca_conecta_sistema_usuario_prototipo.html">
+          <div class="activity-top"><span class="number">2.1</span><span class="arrow">↗</span></div>
+          <h3>Atividade 2.1</h3><p>Versão incompleta / com falha. Sistema apresentado com partes incompletas ou falhas.</p>
+        </a>
+        <a class="activity" href="atividade_2/biblioteca_conecta_com_cancelamento.html">
+          <div class="activity-top"><span class="number">2.2</span><span class="arrow">↗</span></div>
+          <h3>Atividade 2.2</h3><p>Versão completa. Sistema finalizado e funcionando corretamente.</p>
+        </a>
+        <a class="activity" href="atividade_3/biblioteca_conecta_tres_salas.html">
+          <div class="activity-top"><span class="number">3.1</span><span class="arrow">↗</span></div>
+          <h3>Atividade 3.1</h3><p>Versão incompleta / com falha. Sistema apresentado com partes incompletas ou falhas.</p>
+        </a>
+        <a class="activity" href="atividade_3/biblioteca_conecta_notificacoes_e_datas.html">
+          <div class="activity-top"><span class="number">3.2</span><span class="arrow">↗</span></div>
+          <h3>Atividade 3.2</h3><p>Versão completa. Sistema finalizado e funcionando corretamente.</p>
+        </a>
+        <a class="activity" href="atividade_3/biblioteca_conecta_notificacoes_e_datas.html">
+          <div class="activity-top"><span class="number">4.1</span><span class="arrow">↗</span></div>
+          <h3>Atividade 4.1</h3><p>Versão incompleta / com falha. Sistema apresentado com partes incompletas ou falhas.</p>
+        </a>
+        <a class="activity" href="atividade_3/biblioteca_conecta_notificacoes_e_datas.html">
+          <div class="activity-top"><span class="number">4.2</span><span class="arrow">↗</span></div>
+          <h3>Atividade 4.2</h3><p>Versão completa. Sistema finalizado e funcionando corretamente.</p>
+        </a>
+        <a class="activity" href="atividade_5/sistema_versao_5.html">
+          <div class="activity-top"><span class="number">5.1</span><span class="arrow">↗</span></div>
+          <h3>Atividade 5.1</h3><p>Versão completa / com falha. Sistema finalizado e funcionando corretamente.</p>
+        </a>
+        <a class="activity" href="atividade_5/sistema_versao_5_errada.html">
+          <div class="activity-top"><span class="number">5.2</span><span class="arrow">↗</span></div>
+          <h3>Atividade 5.2</h3><p>Versão incompleta. Sistema apresentado com partes incompletas ou falhas.</p>
+        </a>
+        <a class="activity" href="atividade_6/sistema_versao_6.html">
+          <div class="activity-top"><span class="number">06</span><span class="arrow">↗</span></div>
+          <h3>Atividade 6</h3><p>Clique para acessar a atividade 6.</p>
+        </a>
+        <a class="activity" href="atividade_7/sistema_versao_7.html">
+          <div class="activity-top"><span class="number">07</span><span class="arrow">↗</span></div>
+          <h3>Atividade 7</h3><p>Clique para acessar a atividade 7.</p>
+        </a>
+        <a class="activity" href="/atividade_8/sistema_versao_8.html">
+          <div class="activity-top"><span class="number">08</span><span class="arrow">↗</span></div>
+          <h3>Atividade 8</h3><p>Clique para acessar a atividade 8.</p>
+        </a>
+        <a class="activity" href="/atividade_9/sistema_versao_9.html">
+          <div class="activity-top"><span class="number">09</span><span class="arrow">↗</span></div>
+          <h3>Atividade 9</h3><p>Clique para acessar a atividade 9.</p>
+        </a>
+        <a class="activity" href="/atividade_10/sistema_versao_10.html">
+          <div class="activity-top"><span class="number">10</span><span class="arrow">↗</span></div>
+          <h3>Atividade 10</h3><p>Clique para acessar a atividade 10.</p>
+        </a>
+        <a class="activity" href="atividade_11/sistema_versao_11.html">
+          <div class="activity-top"><span class="number">11</span><span class="arrow">↗</span></div>
+          <h3>Atividade 11</h3><p>Clique para acessar a atividade 11.</p>
+        </a>
+        <a class="activity" href="/atividade_12/sistema_versao_12.html">
+          <div class="activity-top"><span class="number">12</span><span class="arrow">↗</span></div>
+          <h3>Atividade 12</h3><p>Clique para acessar a atividade 12.</p>
+        </a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      Desenvolvido como portfólio de atividades • HTML e CSS
+    </footer>
+  </main>
+</body>
+</html>
